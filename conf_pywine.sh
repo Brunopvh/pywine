@@ -26,10 +26,15 @@ green(){
 	echo "$(_c 32)$@$(_c)"
 }
 
+space_line='=========================================='
+github='https://github.com'
+repo="$github/Brunopvh/pywine"
+Curl=$(command -v curl 2> /dev/null)
 
-red "Testando vermelho"
-green "Testando verde"
-
+if [ ! -x "$Curl" ]; then
+	red "Instale a ferramenta ...................... curl"
+	exit 1
+fi
 
 exit "$?"
 

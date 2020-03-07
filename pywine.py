@@ -14,8 +14,9 @@ import getpass
 import platform 
 import re
 import subprocess
+import socket
+#import argparse
 import wget
-import urllib.request   # urllib.request.urlopen(url)
 from time import sleep
 from pathlib import Path
 
@@ -83,7 +84,22 @@ if len(sys.argv) >= int('2'):
 		print(f'V{VERSION}')
 		exit()
 
-print(f'Sistema: {os_id} {os_version_id}')
+msg.white(f'Sistema: {os_id} {os_version_id}')
+print('=> Aguardando conexão: ', end='')
+a = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+a.settimeout(4)
+try:
+	b = a.connect_ex(('www.google.com', 80))
+	if b == 0:
+		print(f'{Yellow}[+] Conectado{Reset}')
+	else:
+		print(f'{Red}[!] AVISO: você está off-line{Reset}')
+		enter = input('Pressione enter ')
+except:
+	print(f'{Red}[!] AVISO: você está off-line{Reset}')
+	enter = input('Pressione enter ')
+
+a.close()
 
 #----------------------------------------------------------#
 # Requerimentos wine para debian e dirivados.
@@ -126,15 +142,17 @@ tup_requeriments_winetricks_suse = (
 
 # Lista de programas disponiveis para instalção.
 tup_programs = (
+	'formatfactory',
+	'peazip',
 	'wine',
 	'winetricks',
 	'winrar',
+	'vlc',
 	)
 
 #----------------------------------------------------------#
 # URLs
 #----------------------------------------------------------#
-repos_suse_emulators = ''
 url_key_libfaudio_buster = 'https://download.opensuse.org/repositories/Emulators:/Wine:/Debian/Debian_10/Release.key'
 url_key_libfaudio_bionic = 'https://download.opensuse.org/repositories/Emulators:/Wine:/Debian/xUbuntu_18.04/Release.key'
 url_key_winehq = 'https://dl.winehq.org/wine-builds/winehq.key'
@@ -174,7 +192,11 @@ for d in tup_dirs:
 #----------------------------------------------------------#
 Winetricks_Script = (f'{dir_bin}/winetricks')
 wine_file_repos = '/etc/apt/sources.list.d/wine.list'
+path_file_epsxe = (f'{dir_downloads}/{os.path.basename(url_epsxe)}')
+path_file_ffactory = (f'{dir_downloads}/{os.path.basename(url_ffactory)}')
+path_file_peazip = (f'{dir_downloads}/peazip-6.9.2.WIN64.exe')
 path_file_winrar = (f'{dir_downloads}/{os.path.basename(url_winrar)}')
+path_file_vlc = (f'{dir_downloads}/{os.path.basename(url_vlc)}')
 
 #----------------------------------------------------------#
 def config_cli_utils():
@@ -389,25 +411,43 @@ def down(url, path_file):
 		msg.red('Interrompido com Ctrl c'); sleep(0.5)
 		if os.path.isfile(path_file): 
 			os.remove(path_file)
-        
 		exit()
 
 	except:
 		msg.red('Falha no download'); sleep(0.5)
 		if os.path.isfile(path_file): 
 			os.remove(path_file)
-
-	exit()
+		exit()
 
 #----------------------------------------------------------#
 # Programas windows
 #----------------------------------------------------------#
 class WindPrograms:
+
+	def epsxe():
+		down(url_epsxe, path_file_epsxe)
+		msg.yellow(f'epsxe baixado em: {path_file_epsxe}')
+
+	def formatfactory():
+		down(url_ffactory, path_file_ffactory)
+
+	def office2007():
+		msg.white('Necessário ter o CD ou arquivo de imagem para instalação [volume OFFICE12]')
+		enter = input('Pressione enter: ')
+		os.system('winetricks office2007pro')
+
+	def peazip():
+		down(url_peazip, path_file_peazip)
+		os.system(f'wine {path_file_peazip}')
 	
 	def winrar():
 		# Baixar é instalar o programa.
 		down(url_winrar, path_file_winrar)
 		os.system(f'wine {path_file_winrar}')
+
+	def vlc():
+		down(url_vlc, path_file_vlc)
+		os.system(f'wine {path_file_vlc}')
 
 #----------------------------------------------------------#
 
@@ -434,12 +474,21 @@ def install_programs(Arguments):
 		Setup_Wine.winetricks()
 
 	for c in Arguments:
-		if c == 'wine':
+
+		if c == 'office2007':        # Office 2007
+			WindPrograms.office2007()
+		elif c == 'peazip':            # Peazip
+			WindPrograms.peazip()
+		elif c == 'wine':              # Winehq-stable
 			install_wine()
-		elif c == 'winetricks':
+		elif c == 'winetricks':      # Winetricks
 			Setup_Wine.winetricks()
-		elif c == 'winrar':
-			WindPrograms.winrar()
+		elif c == 'winrar':          # Winrar
+			WindPrograms.winrar()    
+		elif c == 'vlc':             # Vlc
+			WindPrograms.vlc()
+		else:
+			msg.red(f'Programa indisponível: [{c}]')
 
 #----------------------------------------------------------#
 
