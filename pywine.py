@@ -2,7 +2,7 @@
 #
 #--------------------------------------------------------#
 # REQUERIMENTS
-# python 3.7 ou superior
+# python 3.6 ou superior
 # wget (módulo do python3 - pip3 install wget)
 #
 #
@@ -70,6 +70,11 @@ def usage():
 """)
 
 	exit()
+
+#----------------------------------------------------------#
+
+if len(sys.argv) < 2:
+	usage()
 
 if len(sys.argv) >= int('2'):
 	if sys.argv[1] == '--help':
@@ -264,32 +269,56 @@ class Setup_Wine:
 		os.system(f'sudo apt install --no-install-recommends gnome-exe-thumbnailer -y')
 
 
-	def winetricks_debian():
+	def winetricks():
 		"""
 		Instalar o script winetricks na HOME.
 		"""
 
-		#--------------| Instalar requerimentos |--------------#
-		for c in tup_requeriments_winetricks:
-			print(space_line)
-			msg.white(f'Instalando: {c}')
-			os.system(f'sudo apt install {c}')
+		# Instalar requerimentos para sistemas baseado em debian
+		if os.path.isfile('/etc/debian_version'):
+			for c in tup_requeriments_winetricks:
+				print(space_line)
+				msg.yellow(f'Instalando: {c}')
+				os.system(f'sudo apt install {c}')
 
-		for c in tup_requeriments_debian:
-			print(space_line)
-			msg.white(f'Instalando: {c}')
-			os.system(f'sudo apt install {c}')
+			for c in tup_requeriments_debian:
+				print(space_line)
+				msg.yellow(f'Instalando: {c}')
+				os.system(f'sudo apt install {c}')
 
-		if os.path.isfile(Winetricks_Script) == True:
-			return int('0')
+		# Instalar requerimentos para sistemas RedHat.
+		if which_pkg('dnf') == int('0'):
+			for c in tup_requeriments_winetricks:
+				print(space_line)
+				msg.yellow(f'Instalando: {c}')
+				os.system(f'sudo dnf install {tup_requeriments_winetricks}')
+
+			for c in tup_requeriments_winetricks_suse:
+				print(space_line)
+				msg.yellow(f'Instalando: {c}')
+				os.system(f'sudo dnf install {c}')
+
+
+		# Instalar requerimentos para sistemas RedHat.
+		if which_pkg('zypper') == int('0'):
+			for c in tup_requeriments_winetricks:
+				print(space_line)
+				msg.yellow(f'Instalando: {c}')
+				os.system(f'sudo dnf install {tup_requeriments_winetricks}')
+
+			for c in tup_requeriments_winetricks_suse:
+				print(space_line)
+				msg.yellow(f'Instalando: {c}')
+				os.system(f'sudo dnf install {c}')
 
 
 		# Instalar winetricks
-		msg.white(f'Instalando winetricks')
+		print(space_line)
+		msg.yellow(f'Instalando winetricks')
 		os.system(f'curl -SL {repos_winetricks} -o {Winetricks_Script}')
 
 		if os.path.isfile(Winetricks_Script) == True:
-			msg.white('[+] Sucesso')
+			msg.yellow('[+] Sucesso')
 			os.system(f'chmod a+x {Winetricks_Script}')
 		else:
 			msg.red('[!] Falha')
@@ -319,14 +348,14 @@ def install_wine():
 		Setup_Wine.add_archi386()
 		Setup_Wine.buster()
 		Setup_Wine.winehq_debian()
-		Setup_Wine.winetricks_debian()
+		Setup_Wine.winetricks()
 
 	elif ((os_id == 'linuxmint') and (os_version_id[0:2] == '19')) or ((os_id == 'ubuntu') and (os_codename == 'bionic')):
 		config_cli_utils()
 		Setup_Wine.add_archi386()
 		Setup_Wine.bionic()
 		Setup_Wine.winehq_debian()
-		Setup_Wine.winetricks_debian()
+		Setup_Wine.winetricks()
 
 	elif os_id == 'fedora':
 		os.system('sudo dnf install wine')
@@ -336,28 +365,10 @@ def install_wine():
 		sys.exit('1')
 
 #----------------------------------------------------------#
-# Verificar se o wine já está instalado, caso não esteja o usuario será indagado a respeito de instalação.
-if which_pkg('wine') != int('0'):
-	print(space_line)
-	sn = str(input('Necessário instalar o winehq-stable deseja proseguir [s/n]?: ').lower())
-	if sn != 's':
-		exit()
-
-	install_wine()
-
-#----------------------------------------------------------#
-# Verificar se o winetricks já está instalado, caso não esteja o usuario será indagado a respeito de instalação.
-if which_pkg('winetricks') != int('0'):
-	print(space_line)
-	sn = str(input('Necessário instalar o script winetricks deseja proseguir [s/n]?: ').lower())
-	if sn != 's':
-		exit()
-
-	install_wine()
 
 
 #----------------------------------------------------------#
-# Programas windows
+# Função para download dos arquivos
 #----------------------------------------------------------#
 def down(url, path_file):
 
@@ -388,36 +399,52 @@ def down(url, path_file):
 
 	exit()
 
+#----------------------------------------------------------#
+# Programas windows
+#----------------------------------------------------------#
 class WindPrograms:
 	
 	def winrar():
-		# Baixar o arquivo de instalação.
+		# Baixar é instalar o programa.
 		down(url_winrar, path_file_winrar)
+		os.system(f'wine {path_file_winrar}')
 
 #----------------------------------------------------------#
 
-def install_programs():
+def install_programs(Arguments):
 
-	for c in sys.argv[2:]:
-		c = str(c)
+	# Verificar se o wine já está instalado, caso não esteja o usuario 
+	# será indagado a respeito de instalação.
+	if which_pkg('wine') != int('0'):
+		print(space_line)
+		sn = str(input('Necessário instalar o winehq-stable deseja proseguir [s/n]?: ').lower())
+		if sn != 's':
+			exit()
 
-		if c == str('wine '):
+		install_wine()
+
+	# Verificar se o winetricks já está instalado, caso não esteja o usuario 
+	# será indagado a respeito de instalação.
+	if which_pkg('winetricks') != int('0'):
+		print(space_line)
+		sn = str(input('Necessário instalar o script winetricks deseja proseguir [s/n]?: ').lower())
+		if sn != 's':
+			exit()
+
+		Setup_Wine.winetricks()
+
+	for c in Arguments:
+		if c == 'wine':
 			install_wine()
-
-		elif c == str('winetricks'):
-			install_wine()
-
-		elif c == str('winrar'):
+		elif c == 'winetricks':
+			Setup_Wine.winetricks()
+		elif c == 'winrar':
 			WindPrograms.winrar()
-			os.system(f'wine {path_file_winrar}')
-
-		else:
-			msg.red(f'Programa indisponível: {c}')
 
 #----------------------------------------------------------#
 
 if sys.argv[1] == 'install':
-	install_programs()
+	install_programs(sys.argv[2:])
 
 elif sys.argv[1] == '--list':
 	for c in tup_programs:
