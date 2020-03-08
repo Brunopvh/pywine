@@ -237,7 +237,7 @@ class Setup_Wine:
 		print(url_key_winehq, end='')
 		os.system(f"sudo sh -c 'wget -qO- {url_key_winehq} | apt-key add -'")
 
-		ms.white(f'Adicionando repositórios {repos_emulators_buster} {repos_wine_buster}')
+		msg.white(f'Adicionando repositórios {repos_emulators_buster} {repos_wine_buster}')
 		os.system(f"echo {repos_emulators_buster} | sudo tee {file_repos}")
 		os.system(f"echo {repos_wine_buster} | sudo tee {file_repos}")
 		os.system('sudo apt update')
