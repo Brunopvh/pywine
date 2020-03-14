@@ -6,7 +6,7 @@
 # wget (módulo do python3 - pip3 install wget)
 #
 #
-VERSION = '2020-03-06'
+VERSION = '2020-03-13'
 #
 
 import os, sys
@@ -16,14 +16,16 @@ import re
 import subprocess
 import socket
 #import argparse
-import wget
 from time import sleep
 from pathlib import Path
 
 #----------------------------------------------------------#
-dir_root = os.path.dirname(os.path.realpath(__file__)) # Endereço deste script no disco.
-dir_run = os.getcwd()                                  # Diretório onde o terminal está aberto.
-sys.path.insert(0, dir_root) # print(sys.path)
+# Endereço deste script no disco.
+dir_root = os.path.dirname(os.path.realpath(__file__)) 
+# Diretório onde o terminal está aberto.
+dir_run = os.getcwd()        
+# Inserir o diretório do script no PATH do python - print(sys.path)                          
+sys.path.insert(0, dir_root) 
 
 from modules.sys_info import *
 from modules.colors import *
@@ -33,6 +35,30 @@ os_id = info.get_id()
 os_version = info.get_version()
 os_codename = info.get_codename()
 os_version_id = info.get_version_id()
+
+# Importar o módulo wget para fazer download dos arquivos.
+try:
+	import wget
+except:
+	msg.white('Aguarde - instalado wget')
+	# Checar se pip ou pip3 está instalado para poder instalar o módulo wget.
+	if subprocess.getstatusoutput('which pip3')[0] == int('0'):
+		os.system('pip3 install wget --user')
+	elif subprocess.getstatusoutput('which pip') == int('0'):
+		os.system('pip install wget --user')
+	else:		
+		msg.red('[!] Falha instale o gerenciador de pacotes do python3, [pip3] ou pip')
+		msg.red('Você pode executar a instalação do módulo wget usando pip3 install wget.')
+		sys.exit('1')
+
+	# Tentar importar wget novamente.
+	try:
+		import wget
+	except:
+		print(' ')
+		msg.red('[!] Falha não foi possível importar o módulo wget')
+		sys.exit('1')
+
 
 #----------------------------------------------------------#
 
@@ -51,7 +77,7 @@ if platform.system() != 'Linux':
 	sys.exit('1')
 
 # Limpar a tela do console.
-os.system('clear')
+#os.system('clear')
 
 # Usuário não pode ser "root"
 if getpass.getuser() == 'root': 
@@ -85,6 +111,8 @@ if len(sys.argv) >= int('2'):
 		exit()
 
 msg.white(f'Sistema: {os_id} {os_version_id}')
+
+# Verificar conexão com a internet.
 print('=> Aguardando conexão: ', end='')
 a = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 a.settimeout(4)
@@ -94,7 +122,8 @@ try:
 		print(f'{Yellow}[+] Conectado{Reset}')
 	else:
 		print(f'{Red}[!] AVISO: você está off-line{Reset}')
-		enter = input('Pressione enter ')
+		# Mostrar esta mensagem e prosseguir quando o usuário teclar enter.
+		enter = input('Pressione enter ') 
 except:
 	print(f'{Red}[!] AVISO: você está off-line{Reset}')
 	enter = input('Pressione enter ')
@@ -290,6 +319,12 @@ class Setup_Wine:
 		os.system(f'sudo apt install --no-install-recommends gnome-colors-common gnome-wine-icon-theme gtk2-engines-murrine -y')
 		os.system(f'sudo apt install --no-install-recommends gnome-exe-thumbnailer -y')
 
+	def wine_arch():
+		# pacman -Ss wine
+		print(space_line)
+		msg.red('[!] Instale o wine manualmente o link abaixo para informações: ')
+		msg.white('https://wiki.archlinux.org/index.php/Wine')
+		sys.exit('1')
 
 	def winetricks():
 		"""
@@ -349,7 +384,8 @@ class Setup_Wine:
 
 def which_pkg(app):
 	"""
-	Usar o utilitário de linha de comando which para verificar a existência de um executável qualquer.
+	Usar o utilitário de linha de comando which para verificar 
+	a existência de um executável qualquer.
 	"""
 	
 	if (subprocess.getstatusoutput(f'which {app} 2> /dev/null')[0]) == int('0'):
@@ -382,8 +418,11 @@ def install_wine():
 	elif os_id == 'fedora':
 		os.system('sudo dnf install wine')
 
+	elif os_id == 'arch':
+		Setup_Wine.wine_arch()
+
 	else:
-		msg.red('Programa indisponível para seu sistema.')
+		msg.red('Programa indisponível para seu sistema - tente instalar o wine manualmente.')
 		sys.exit('1')
 
 #----------------------------------------------------------#
