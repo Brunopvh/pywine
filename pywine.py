@@ -6,7 +6,7 @@
 # wget (módulo do python3 - pip3 install wget)
 #
 #
-VERSION = '2020-03-13'
+VERSION = '2020-03-14'
 #
 
 import os, sys
@@ -22,8 +22,10 @@ from pathlib import Path
 #----------------------------------------------------------#
 # Endereço deste script no disco.
 dir_root = os.path.dirname(os.path.realpath(__file__)) 
+
 # Diretório onde o terminal está aberto.
 dir_run = os.getcwd()        
+
 # Inserir o diretório do script no PATH do python - print(sys.path)                          
 sys.path.insert(0, dir_root) 
 
@@ -245,72 +247,15 @@ class Setup_Wine:
 	https://forum.winehq.org/viewtopic.php?t=32061
 	https://forum.winehq.org/viewtopic.php?f=8&t=32192
 	"""
-
-	def add_archi386():
+	
+	def wine_debian():
 		"""
-		Adicionar suporte a arch 32 bits.
+		Instalar wine apartir do repositório da distro.
 		"""
-		print(space_line)
-		msg.white('Adicionando suporte a arch i386')
-		os.system(f"sudo dpkg --add-architecture i386")
-		
-	def buster():
-		"""
-		Instalar a depedência libfaudio no debian buster
-		"""
-		print(space_line)
-		msg.white(f'Adicionando keys')
-		print(url_key_libfaudio_buster, end=' ')
-		os.system(f"sudo sh -c 'wget -qO- {url_key_libfaudio_buster} | apt-key add -'")
-
-		print(url_key_winehq, end='')
-		os.system(f"sudo sh -c 'wget -qO- {url_key_winehq} | apt-key add -'")
-
-		msg.white(f'Adicionando repositórios {repos_emulators_buster} {repos_wine_buster}')
-		os.system(f"echo {repos_emulators_buster} | sudo tee {file_repos}")
-		os.system(f"echo {repos_wine_buster} | sudo tee {file_repos}")
-		os.system('sudo apt update')
 
 		print(space_line)
-		msg.green('Instalando libfaudio')
-		os.system('sudo apt install libfaudio0:i386')
-
-	def bionic():
-		"""
-		Instalar a depedência libfaudio no ubuntu bionic
-		"""
-		print(space_line)
-		msg.white(f'Adicionando keys')
-		print(url_key_libfaudio_bionic, end=' ')
-		os.system(f"sudo sh -c 'wget -qO- {url_key_libfaudio_bionic} | apt-key add -'")
-		# sudo apt-key adv --keyserver keyserver.ubuntu.com --recv-keys DFA175A75104960E
-
-		print(url_key_winehq, end='')
-		os.system(f"sudo sh -c 'wget -qO- {url_key_winehq} | apt-key add -'")
-
-		msg.white(f'Adicionando repositórios {repos_emulators_bionic} {repos_wine_bionic}')
-		os.system(f'sudo apt-add-repository {repos_emulators_bionic}')
-		os.system(f'sudo apt-add-repository {repos_wine_bionic}')
-		os.system('sudo apt update')
-
-		print(space_line)
-		msg.green('Instalando libfaudio')
-		os.system('sudo apt install libfaudio0:i386')
-		
-	def winehq_debian():
-		"""
-		Instalar requerimentos e em seguida o winehq-stable
-		"""
-
-		# Instalar um por vez nesta ordem para não ter problemas com pacotes quebrados.
-		for c in tup_requeriments_debian:
-			print(space_line)
-			msg.green(f'Instalando: {c}')
-			os.system(f'sudo apt install --install-recommends {c}')
-
-		print(space_line)
-		msg.white('Instalando winehq-stable')
-		os.system('sudo apt install -y winehq-stable')
+		msg.white('Instalando wine')
+		os.system('sudo apt install -y wine')
 
 
 		# Suporte a icones .exe do windows.
@@ -319,7 +264,7 @@ class Setup_Wine:
 		os.system(f'sudo apt install --no-install-recommends gnome-colors-common gnome-wine-icon-theme gtk2-engines-murrine -y')
 		os.system(f'sudo apt install --no-install-recommends gnome-exe-thumbnailer -y')
 
-	def wine_arch():
+	def wine_archlinux():
 		# pacman -Ss wine
 		print(space_line)
 		msg.red('[!] Instale o wine manualmente o link abaixo para informações: ')
@@ -387,7 +332,6 @@ def which_pkg(app):
 	Usar o utilitário de linha de comando which para verificar 
 	a existência de um executável qualquer.
 	"""
-	
 	if (subprocess.getstatusoutput(f'which {app} 2> /dev/null')[0]) == int('0'):
 		return int('0') # Sucesso, o pacote executável existe.
 	else:
@@ -403,23 +347,19 @@ def install_wine():
 
 	if (os_codename == 'buster'):
 		config_cli_utils()
-		Setup_Wine.add_archi386()
-		Setup_Wine.buster()
-		Setup_Wine.winehq_debian()
+		Setup_Wine.wine_debian()
 		Setup_Wine.winetricks()
 
 	elif ((os_id == 'linuxmint') and (os_version_id[0:2] == '19')) or ((os_id == 'ubuntu') and (os_codename == 'bionic')):
 		config_cli_utils()
-		Setup_Wine.add_archi386()
-		Setup_Wine.bionic()
-		Setup_Wine.winehq_debian()
+		Setup_Wine.wine_debian()
 		Setup_Wine.winetricks()
 
 	elif os_id == 'fedora':
 		os.system('sudo dnf install wine')
 
 	elif os_id == 'arch':
-		Setup_Wine.wine_arch()
+		Setup_Wine.wine_archlinux()
 
 	else:
 		msg.red('Programa indisponível para seu sistema - tente instalar o wine manualmente.')
@@ -530,13 +470,19 @@ def install_programs(Arguments):
 			msg.red(f'Programa indisponível: [{c}]')
 
 #----------------------------------------------------------#
+for c in sys.argv:
+	if sys.argv[1] == 'install':
+		install_programs(sys.argv[2:])
 
-if sys.argv[1] == 'install':
-	install_programs(sys.argv[2:])
+	elif sys.argv[1] == '--list':
+		for c in tup_programs:
+			print(f'    {c}')
 
-elif sys.argv[1] == '--list':
-	for c in tup_programs:
-		print(f'    {c}')
+	elif sys.argv[1] == '--upgrade':
+		os.system(f'sh -c "{dir_root}/conf_pywine.sh"')
+
+	else:
+		msg.red(f'Comando não encontrado: {sys.argv[1]}')
 
 
 
