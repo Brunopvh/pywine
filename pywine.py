@@ -293,7 +293,7 @@ class Setup_Wine:
 			for c in tup_requeriments_winetricks:
 				print(space_line)
 				msg.yellow(f'Instalando: {c}')
-				os.system(f'sudo dnf install {tup_requeriments_winetricks}')
+				os.system(f'sudo dnf install {c}')
 
 			for c in tup_requeriments_winetricks_suse:
 				print(space_line)
