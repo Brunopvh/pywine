@@ -1,4 +1,5 @@
 #!/usr/bin/env python3
+# -*- coding: utf-8 -*-
 #
 #--------------------------------------------------------#
 # REQUERIMENTS
@@ -133,15 +134,6 @@ except:
 a.close()
 
 #----------------------------------------------------------#
-# Requerimentos wine para debian e dirivados.
-tup_requeriments_debian = (
-	'libc6', 
-	'libasound2:i386', 
-	'wine-stable-i386:i386', 
-	'wine-stable-i386:i386', 
-	'wine-stable-amd64', 
-	'wine-stable'
-)
 
 tup_requeriments_winetricks = (
 	'zenity',
@@ -252,22 +244,31 @@ class Setup_Wine:
 		"""
 		Instalar wine apartir do repositório da distro.
 		"""
+		print(space_line)
+		msg.white('Adicionando suporte a arch-i386')
+		os.system('dpkg --add-architecture i386')
+
+		msg.white('Instalando os pacotes: dirmngr apt-transport-https gnupg gpgv2 gpgv')
+		os.system("sudo sh -c 'apt update; apt install -y dirmngr apt-transport-https gnupg gpgv2 gpgv'")
 
 		print(space_line)
-		msg.white('Instalando wine')
+		msg.white('Instalando: wine')
 		os.system('sudo apt install -y wine')
 
+		print(space_line)
+		msg.white('Instalando: wine32')
+		os.system('sudo apt install -y install wine32')
 
 		# Suporte a icones .exe do windows.
 		print(space_line)
-		msg.white('Instalando recomendações')
-		os.system(f'sudo apt install --no-install-recommends gnome-colors-common gnome-wine-icon-theme gtk2-engines-murrine -y')
-		os.system(f'sudo apt install --no-install-recommends gnome-exe-thumbnailer -y')
+		msg.white('Instalando: gnome-colors-common gnome-wine-icon-theme gtk2-engines-murrine gnome-exe-thumbnailer')
+		os.system(f'sudo apt install -y --no-install-recommends gnome-colors-common gnome-wine-icon-theme gtk2-engines-murrine')
+		os.system(f'sudo apt install -y --no-install-recommends gnome-exe-thumbnailer')
 
 	def wine_archlinux():
 		# pacman -Ss wine
 		print(space_line)
-		msg.red('[!] Instale o wine manualmente o link abaixo para informações: ')
+		msg.red('[!] Instale o wine manualmente visite o link abaixo para mais informações: ')
 		msg.white('https://wiki.archlinux.org/index.php/Wine')
 		sys.exit('1')
 
@@ -279,11 +280,6 @@ class Setup_Wine:
 		# Instalar requerimentos para sistemas baseado em debian
 		if os.path.isfile('/etc/debian_version'):
 			for c in tup_requeriments_winetricks:
-				print(space_line)
-				msg.yellow(f'Instalando: {c}')
-				os.system(f'sudo apt install {c}')
-
-			for c in tup_requeriments_debian:
 				print(space_line)
 				msg.yellow(f'Instalando: {c}')
 				os.system(f'sudo apt install {c}')
@@ -345,13 +341,7 @@ def install_wine():
 	de acordo com o sistema.
 	"""
 
-	if (os_codename == 'buster'):
-		config_cli_utils()
-		Setup_Wine.wine_debian()
-		Setup_Wine.winetricks()
-
-	elif ((os_id == 'linuxmint') and (os_version_id[0:2] == '19')) or ((os_id == 'ubuntu') and (os_codename == 'bionic')):
-		config_cli_utils()
+	if (os_id == 'debian') or (os_id == 'ubuntu') or (os_id == 'linuxmint'):
 		Setup_Wine.wine_debian()
 		Setup_Wine.winetricks()
 
