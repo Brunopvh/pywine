@@ -5,7 +5,7 @@
 from os import system
 from lib.process import SysProcs
 
-class ManagerPkgs:
+class PkgManager:
 
 	def __init__(self, pkgs):
 		self.pkgs = pkgs
@@ -16,16 +16,22 @@ class ManagerPkgs:
 		  exit()
 
 	def pacman(self):
-
-		SysProcs('vlc').loop_process_run()
-		exit()
+		SysProcs('pacman').loop_process_run()
 		
 		for i in self.pkgs:
 			print(f'Instalando: {i}')
 			system(f'sudo pacman -S --needed --noconfirm {i}')
 
+	def apt(self, arguments=False):
 
-	def apt(self):
+		# Gerar um loop enquanto outro processo 'apt install' estiver em execução.
+		SysProcs('apt install').loop_process_run()
+		SysProcs('apt.systemd').loop_process_run()
+		SysProcs('dpkg install').loop_process_run()
+
 		for i in self.pkgs:
 			print(f'Instalando: {i}')
-			#system(f'sudo apt install -y {i}')
+			if arguments == False:
+				system(f'sudo apt install -y {i}')
+			else:
+				system(f'sudo apt install -y {arguments} {i}')
