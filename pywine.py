@@ -201,6 +201,12 @@ class InstallerPrograms:
 		elif self.os_id == 'debian':
 			self.winetricks_debian()
 
+	def q4wine(self):
+		if self.os_id == 'arch':
+			PkgManager(['q4wine']).pacman('-S')
+		elif self.os_id == 'debian':
+			PkgManager('q4wine').apt('install')
+
 
 
 parser = argparse.ArgumentParser(
@@ -234,6 +240,7 @@ args = parser.parse_args()
 # Execução
 #----------------------------------------------------------#
 if args.list_all_apps:
+	print('q4wine')
 	print('wine')
 	print('winetricks')
 elif args.pkg_for_install:

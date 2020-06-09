@@ -3,6 +3,7 @@
 #
 
 from os import system
+from lib.colors import PrintColor
 
 class PkgManager:
 
@@ -32,11 +33,11 @@ class PkgManager:
 
 		if arguments == 'install':
 			for i in self.pkgs:
-				print(f'Instalando: {i}')
+				PrintColor.yellow(f'Instalando: {i}')
 				system(f'sudo apt install -y {i}')
 		elif arguments == '--no-install-recommends':
 			for i in self.pkgs:
-				print(f'Instalando: {i}')
+				PrintColor.yellow(f'Instalando: {i}')
 				system(f'sudo apt install -y --no-install-recommends {i}')
 		elif arguments == 'remove':
 			for i in self.pkgs:
