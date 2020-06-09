@@ -66,7 +66,6 @@ if (sys_kernel() != 'Linux') and (sys_kernel != 'FreeBSD'):
 UrlWinetricks = 'https://raw.githubusercontent.com/Winetricks/winetricks/master/src/winetricks'
 UrlPywinery = 'https://github.com/ergoithz/pywinery/releases/download/0.3.3/pywinery_0.3-3.tar.gz'
 
-
 class InstallerPrograms:
 
 	def __init__(self, os_id=OsInfo.get_os_id()):
@@ -94,7 +93,7 @@ class InstallerPrograms:
 			'lib32-sdl',
 			]
 		# Habilitar [multilib] no archlinux
-		os.system(f'sudo {dir_root}/scripts/addrepo.py --repo archlinux')
+		#os.system(f'sudo {dir_root}/scripts/addrepo.py --repo archlinux')
 		pkg(programs).pacman()
 
 	def wine(self):

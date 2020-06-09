@@ -3,6 +3,7 @@
 #
 
 from os import system
+from lib.process import SysProcs
 
 class ManagerPkgs:
 
@@ -15,11 +16,16 @@ class ManagerPkgs:
 		  exit()
 
 	def pacman(self):
+
+		SysProcs('vlc').loop_process_run()
+		exit()
+		
 		for i in self.pkgs:
 			print(f'Instalando: {i}')
 			system(f'sudo pacman -S --needed --noconfirm {i}')
 
+
 	def apt(self):
 		for i in self.pkgs:
 			print(f'Instalando: {i}')
-			system(f'sudo apt install -y {i}')
+			#system(f'sudo apt install -y {i}')
