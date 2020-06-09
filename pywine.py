@@ -21,7 +21,7 @@ from getpass import getuser
 from time import sleep
 from pathlib import Path
 
-__version__ = '2020-06-06'
+__version__ = '2020-06-09'
 
 #----------------------------------------------------------#
 
@@ -135,7 +135,7 @@ class InstallerPrograms:
 			]
 		# Habilitar [multilib] no archlinux
 		os.system(f'sudo {dir_root}/scripts/addrepo.py --repo archlinux')
-		PkgManager(programs_archlinux).pacman()
+		PkgManager(programs_archlinux).pacman('-S')
 
 	def wine_debian(self):
 		'''
@@ -161,10 +161,10 @@ class InstallerPrograms:
 			'gnome-exe-thumbnailer',
 		]
 
-		msg('Adicioando suporte a arch i386')
+		yellow('Adicioando suporte a arch i386')
 		os.system('sudo dpkg --add-architecture i386')
 		os.system('sudo apt update')
-		PkgManager(programs_debian).apt()
+		PkgManager(programs_debian).apt('install')
 		
 		yn = YesNo('Deseja instalar gnome-exe-thumbnailer').input_yesno()
 		if yn == 'True':
@@ -175,17 +175,17 @@ class InstallerPrograms:
 		if is_executable('wine') == 'False':
 			self.wine()
 
-		PkgManager(requeriments_winetricks).pacman()
-		PkgManager(requeriments_winetricks_suse).pacman()
-		PkgManager(['winetricks']).pacman()
+		PkgManager(requeriments_winetricks).pacman('-S')
+		PkgManager(requeriments_winetricks_suse).pacman('-S')
+		PkgManager(['winetricks']).pacman('-S')
 
 	def winetricks_debian(self):
 		if is_executable('wine') == 'False':
 			self.wine()
 
-		PkgManager(requeriments_winetricks).apt()
-		PkgManager(requeriments_winetricks_debian).apt()
-		PkgManager(['winetricks']).apt()
+		PkgManager(requeriments_winetricks).apt('install')
+		PkgManager(requeriments_winetricks_debian).apt('install')
+		PkgManager(['winetricks']).apt('install')
 
 #--------------------------| Executar Instalação |-------------------------#
 
