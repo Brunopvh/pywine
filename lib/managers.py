@@ -3,7 +3,11 @@
 #
 
 from os import system
+from lib.sys_process import ShowProcessLoop
 from lib.colors import PrintColor
+
+red = PrintColor.red
+yellow = PrintColor.yellow
 
 class PkgManager:
 
@@ -14,34 +18,46 @@ class PkgManager:
 		if isinstance(self.pkgs, list): 
 			return 'True'
 		else:
-			print('[!] Falha o(s) pacotes para instalação precisam ser passados em forma de uma lista.') 
+			red('Falha o(s) pacotes para instalação precisam ser passados em forma de uma lista.') 
 			print(__class__)
 			return 'False'
 
-	def pacman(self, arguments):
+	def pacman(self, argument):
 		if self.pkg_is_list() != 'True':
 			return
 
-		if arguments == '-S':
+		if argument == '-S':
 			for i in self.pkgs:
-				print(f'Instalando: {i}')
+				yellow(f'Instalando: {i}')
 				system(f'sudo pacman -S --needed --noconfirm {i}')
 
-	def apt(self, arguments):
+	def apt(self, argument):
 		if self.pkg_is_list() != 'True':
 			return
 
-		if arguments == 'install':
+		ShowProcessLoop('apt').apt_process_loop()
+
+		if argument == 'install':
 			for i in self.pkgs:
-				PrintColor.yellow(f'Instalando: {i}')
+				yellow(f'Instalando: {i}')
 				system(f'sudo apt install -y {i}')
-		elif arguments == '--no-install-recommends':
+		elif argument == '--no-install-recommends':
 			for i in self.pkgs:
-				PrintColor.yellow(f'Instalando: {i}')
+				yellow(f'Instalando: {i}')
 				system(f'sudo apt install -y --no-install-recommends {i}')
-		elif arguments == 'remove':
+		elif argument == 'remove':
 			for i in self.pkgs:
 				system(f'sudo apt remove {i}')
+
+	def dnf(self, argument):
+		if self.pkg_is_list() != 'True':
+			return
+
+		if argument == 'install':
+			for i in self.pkgs:
+				yellow(f'Instalando: {i}')
+				system(f'sudo dnf install -y {i}')
+
 
 
 

@@ -16,7 +16,7 @@ from platform import system as sys_kernel
 from getpass import getuser
 from pathlib import Path
 
-__version__ = '2020-06-10'
+__version__ = '2020-06-13'
 
 #----------------------------------------------------------#
 

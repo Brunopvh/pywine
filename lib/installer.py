@@ -8,7 +8,6 @@ import sys
 from time import sleep
 
 from lib.os_info import OsInfo 
-from lib.downloader import pywget as dow
 from lib.managers import PkgManager  
 from lib.yesno import YesNo
 from lib.colors import PrintColor 
@@ -57,10 +56,11 @@ def is_executable(exec):
 	else:
 		return 'False'
 
+
 class InstallerPrograms:
 	
-	def __init__(self, os_id=OsInfo.get_os_id()):
-		self.os_id = os_id
+	def __init__(self):
+		self.os_id = OsInfo.get_os_id()
 
 #--------------------------| Wine |-------------------------#
 
@@ -123,6 +123,9 @@ class InstallerPrograms:
 		if yn == 'True':
 			PkgManager(gnome_wine).apt('--no-install-recommends')
 
+	def wine_fedora(self):
+		PkgManager(['wine']).dnf('install')
+
 #--------------------------| WineTricks |-------------------------#
 	def winetricks_archlinux(self):
 		if is_executable('wine') == 'False':
@@ -140,22 +143,37 @@ class InstallerPrograms:
 		PkgManager(requeriments_winetricks_debian).apt('install')
 		PkgManager(['winetricks']).apt('install')
 
+	def winetricks_fedora(self):
+		if is_executable('wine') == 'False':
+			self.wine()
+
+		PkgManager(requeriments_winetricks).dnf('install')
+		PkgManager(requeriments_winetricks_suse).dnf('install')
+		PkgManager(['winetricks']).dnf('install')
+
+
 #--------------------------| Executar Instalação |-------------------------#
 
 	def wine(self):
 		if self.os_id == 'arch':
 			self.wine_archlinux()
-		elif self.os_id == 'debian':
+		elif os.path.isfile('/etc/debian_version'):
 			self.wine_debian()
+		elif self.os_id == 'fedora':
+			self.wine_fedora()
 
 	def winetricks(self):
 		if self.os_id == 'arch':
 			self.winetricks_archlinux()
-		elif self.os_id == 'debian':
+		elif self.os_id == 'fedora':
+			self.winetricks_fedora()
+		elif os.path.isfile('/etc/debian_version'):
 			self.winetricks_debian()
 
 	def q4wine(self):
 		if self.os_id == 'arch':
 			PkgManager(['q4wine']).pacman('-S')
-		elif self.os_id == 'debian':
+		elif self.os_id == 'fedora':
+			PkgManager(['q4wine']).dnf('install')
+		elif os.path.isfile('/etc/debian_version'):
 			PkgManager(['q4wine']).apt('install')
