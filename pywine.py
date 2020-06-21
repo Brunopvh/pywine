@@ -16,7 +16,7 @@ from platform import system as sys_kernel
 from getpass import getuser
 from pathlib import Path
 
-__version__ = '2020-06-13'
+__version__ = '2020-06-21'
 
 #----------------------------------------------------------#
 
@@ -39,6 +39,7 @@ yellow = PrintColor.yellow
 blue = PrintColor.blue
 white = PrintColor.white
 msg = PrintColor.msg
+
 
 #----------------------------------------------------------#
 # Verificações

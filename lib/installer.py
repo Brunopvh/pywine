@@ -19,6 +19,9 @@ blue = PrintColor.blue
 white = PrintColor.white
 msg = PrintColor.msg
 
+dir_local_libs = os.path.dirname(__file__)
+dir_root = os.path.abspath(os.path.join(dir_local_libs, '..'))
+
 #----------------------------------------------------------#
 # Listas e Tuplas
 #----------------------------------------------------------#
