@@ -33,7 +33,7 @@ class InstallerPrograms(PrintText):
 	def __init__(self):
 		self.user_home = Path.home()
 		self.user_bin = os.path.abspath(os.path.join(self.user_home, '.local', 'bin'))
-		self.winetricks_script = os.path.abspath(os.path.join(self.user_bin, 'winetricks'))
+		self.winetricks_script = os.path.abspath(os.path.join('/usr/local/bin', 'winetricks'))
 		if os.path.isdir(self.user_bin) == False:
 			os.makedirs(self.user_bin)	
 
@@ -136,6 +136,7 @@ class InstallerPrograms(PrintText):
 	def winetricks(self):
 		winetricks_url = 'https://raw.githubusercontent.com/Winetricks/winetricks/master/src/winetricks'
 		os_id = ReleaseInfo().info('ID')
+		tmpFile = tempfile.NamedTemporaryFile().name
 
 		self.yellow('Instalado winetricks')
 		if os.path.isfile('/etc/debian_version') == True: # Debian/Ubuntu/Mint
@@ -151,11 +152,13 @@ class InstallerPrograms(PrintText):
 			return int('1')
 
 		# Instalar winetricks para o usuário atual.
+		print(f'Baixando winetricks em .... {tmpFile}')
+		urllib.request.urlretrieve(winetricks_url, tmpFile)
 		self.line('*')
 		print(f'Instalando winetricks em: {self.winetricks_script}')
 		self.line('*')
-		urllib.request.urlretrieve(winetricks_url, self.winetricks_script)
-		os.system(f'chmod +x {self.winetricks_script}')
+		os.system(f'sudo cp -u {tmpFile} {self.winetricks_script}')
+		os.system(f'sudo chmod a+x {self.winetricks_script}')
 		os.system(f'{self.winetricks_script} --version')
 
 	def pywinery(self):
