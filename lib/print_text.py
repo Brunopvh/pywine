@@ -1,7 +1,10 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
-#
-#
+
+import os
+
+columns = os.get_terminal_size(0)[0]
+space_line = ('-' * columns)
 
 # Default
 CRed = '\033[0;31m'
@@ -39,32 +42,36 @@ CBWhite = '\033[5;37m'
 CReset = '\033[0m'
 
 
-class PrintColor:
+class PrintText:
+	def __init__(self):
+		pass
 
-	def red(text=''):
+	def red(self, text=''):
 		print(f'{CRed}[!] {text}{CReset}')
 
-	def green(text=''):
-		print(f'{CGreen}[*] {text}{CReset}')
+	def green(self, text=''):
+		print(f'{CGreen}{text}{CReset}')
 
-	def yellow(text=''):
-		print(f'{CYellow}[+] {text}{CReset}')
+	def yellow(self, text=''):
+		print(f'{CYellow}{text}{CReset}')
 
-	def blue(text=''):
+	def blue(self, text=''):
 		print(f'{CBlue}{text}{CReset}')
 
-	def white(text=''):
+	def white(self, text=''):
 		print(f'{CWhite}{text}{CReset}')
 		
 		
-	def msg(text=''):
-		line = ('-' * 45)
-		print(line)
-		print(f'{CWhite}{text}{CReset}')
-		print(line)
+	def msg(self, text=''):
+		print(text)
 
+	def line(self, char=None):
+		if char == None:
+			print('-' * columns)
+		else:
+			print(char * columns)
 
-
+	# Strong
 	def sred(text=''):
 		print(f'{CSRed}{text}{CReset}')
 
@@ -80,8 +87,7 @@ class PrintColor:
 	def swhite(text=''):
 		print(f'{CSWhite}{text}{CReset}')
 
-
-
+	# Dark
 	def dred(text=''):
 		print(f'{CDRed}{text}{CReset}')
 
