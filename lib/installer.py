@@ -135,12 +135,17 @@ class InstallerPrograms(PrintText):
 
 	def winetricks(self):
 		winetricks_url = 'https://raw.githubusercontent.com/Winetricks/winetricks/master/src/winetricks'
+		os_id = ReleaseInfo().info('ID')
+
 		self.yellow('Instalado winetricks')
 		if os.path.isfile('/etc/debian_version') == True: # Debian/Ubuntu/Mint
 			AptGet().update()
 			AptGet().install(requeriments_winetricks)
 			AptGet().install(requeriments_winetricks_debian)
 			# AptGet().install(['winetricks']) # Versão disponível nos repositórios do sistema.
+		elif os_id == 'arch':
+			Pacman().update()
+			Pacman().install(requeriments_winetricks)
 		else:
 			self.red('A instalação do winetricks não está disponível para o seu sistema apartir deste programa.')
 			return int('1')
