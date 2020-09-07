@@ -9,6 +9,7 @@ import platform
 import shutil
 import urllib.request
 from pathlib import Path
+
 from lib.print_text import PrintText
 from lib.apt_get import AptGet 
 from lib.pacman import Pacman
@@ -16,13 +17,13 @@ from lib.os_release import ReleaseInfo
 
 TempDir = tempfile.mkdtemp()
 
-requeriments_winetricks = ['zenity', 'cabextract', 'unrar', 'unzip', 'wget']
+# Winetricks requeriments
+requeriments_winetricks = 'zenity cabextract unrar unzip wget'
+requeriments_winetricks_debian = 'binutils fuseiso p7zip-full policykit-1 xz-utils'
+requeriments_winetricks_suse = 'binutils fuseiso p7zip polkit xdg-utils xz'
 
-requeriments_winetricks_debian = ['binutils', 'fuseiso', 'p7zip-full', 'policykit-1', 'xz-utils']
-
-requeriments_winetricks_suse = ['binutils', 'fuseiso', 'p7zip', 'polkit', 'xdg-utils', 'xz']
-
-requeriments_wine_debian = ['wine-stable-i386', 'wine-stable-amd64', 'wine-stable', 'winehq-stable']
+# Wine debian requeriments.
+requeriments_wine_debian = 'wine-stable-i386 wine-stable-amd64 wine-stable winehq-stable'
 
 def is_executable(exec):
 	if int(subprocess.getstatusoutput(f'command -v {exec} 2> /dev/null')[0]) == int('0'):
@@ -83,7 +84,7 @@ class InstallerPrograms(PrintText):
 		urllib.request.urlretrieve(url_key_wine_stable, 'winehq.key')
 		os.system('sudo apt-key add winehq.key')
 
-		# Adicionar key para libfaudio.
+		# Adicionar key para libf-audio.
 		self.msg('Adicionando key para libfaudio aguarde...')
 		if codename == 'buster':
 			urllib.request.urlretrieve(url_key_libfaudio_debian_buster, 'Release-buster.key')
@@ -105,7 +106,7 @@ class InstallerPrograms(PrintText):
 		os.system('sudo dpkg --add-architecture i386')
 
 		AptGet().update()
-		AptGet().install(['libfaudio0:i386'])
+		AptGet().install('libfaudio0:i386')
 		AptGet().install(requeriments_wine_debian)
 
 	def add_archlinux_multilib(self):
@@ -141,7 +142,7 @@ class InstallerPrograms(PrintText):
 	def wine_archlinux(self):
 		self.add_archlinux_multilib()
 		Pacman().update()
-		Pacman().install(['wine', 'wine-mono', 'wine-gecko'])
+		Pacman().install('wine wine-mono wine-gecko')
 
 	def wine(self):
 		os_id = ReleaseInfo().info('ID')
@@ -164,10 +165,11 @@ class InstallerPrograms(PrintText):
 			AptGet().update()
 			AptGet().install(requeriments_winetricks)
 			AptGet().install(requeriments_winetricks_debian)
-			# AptGet().install(['winetricks']) # Versão disponível nos repositórios do sistema.
+			AptGet().install('winetricks') # Versão disponível nos repositórios do sistema.
 		elif os_id == 'arch':
 			Pacman().update()
 			Pacman().install(requeriments_winetricks)
+			Pacman().install('winetricks')
 		else:
 			self.red('A instalação do winetricks não está disponível para o seu sistema apartir deste programa.')
 			return int('1')
@@ -215,7 +217,7 @@ class InstallerPrograms(PrintText):
 
 	def q4wine(self):
 		if os.path.isfile('/etc/debian_version') == True:
-			AptGet().install(['q4wine'])
+			AptGet().install('q4wine')
 		else:
 			self.red('A instalação do q4wine não está disponível para o seu sistema apartir deste programa.')
 			return int('1')

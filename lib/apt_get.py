@@ -102,16 +102,17 @@ class AptGet:
 				ProcessLoop(pid_apt).process_loop()
 				
 	def install(self, pkgs):
-		if self.pkg_is_list(pkgs) == 'False':
-			return
+		# Verificar se existe outro processo 'apt' em execução no sistema.
+		self.apt_process_loop() 
 
-		self.apt_process_loop() # Verificar se existe outro processo 'apt' em execução no sistema.
-
-		for PKG in pkgs: # Instalar cada pacote da lista, individualmente.
-			print(line)
-			print(f'Instalando: {PKG}')			
-			print(line)
-			os.system(f'sudo apt install {PKG}')
+		# Remover eventuais travas do apt.
+		os.system('sudo rm /var/lib/dpkg/lock-frontend 2> /dev/null') 
+		os.system('sudo rm /var/cache/apt/archives/lock 2> /dev/null')
+		
+		print(line)
+		print(f'Instalando: {pkgs}')			
+		print(line)
+		os.system(f'sudo apt install {pkgs}')
 
 	def update(self):
 		print(line)
