@@ -5,6 +5,7 @@
 import os
 import tempfile
 import tarfile
+import platform
 import shutil
 import urllib.request
 from pathlib import Path
@@ -29,13 +30,33 @@ def is_executable(exec):
 	else:
 		return 'False'
 
+def mkdir(path):
+        try:
+            if not os.path.exists(path):
+                os.makedirs(path, 0o700)
+                return True
+        except Exception as erro:
+            print("[!] Não foi possível criar o diretório: {0}".format(path))
+            print(erro)
+            return False
+
+        if not os.access(path, os.W_OK):
+            print("[!] Você não tem permissão de escrita em: {0}".format(path))
+            return False
+
+        return True
+
 class InstallerPrograms(PrintText):
 	def __init__(self):
-		self.user_home = Path.home()
+		if platform.system() == 'FreeBSD':
+			self.user_home = os.path.abspath(os.path.join('/usr', Path.home()))
+		else:
+			self.user_home = Path.home()
+
 		self.user_bin = os.path.abspath(os.path.join(self.user_home, '.local', 'bin'))
 		self.winetricks_script = os.path.abspath(os.path.join('/usr/local/bin', 'winetricks'))
 		if os.path.isdir(self.user_bin) == False:
-			os.makedirs(self.user_bin)	
+			mkdir(self.user_bin)	
 
 	def broke(self):
 		os.system('sudo apt --fix-broken install')

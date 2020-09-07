@@ -8,7 +8,7 @@ import argparse
 from platform import system as sys_kernel 
 from getpass import getuser
 
-__version__ = '2020-08-09'
+__version__ = '2020-09-06'
 
 # Endereço deste script no disco.
 dir_root = os.path.dirname(os.path.realpath(__file__)) 
