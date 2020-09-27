@@ -144,6 +144,9 @@ class InstallerPrograms(PrintText):
 		Pacman().update()
 		Pacman().install('wine wine-mono wine-gecko')
 
+	def wine_fedora(self):
+		os.system('sudo dnf install wine')
+
 	def wine(self):
 		os_id = ReleaseInfo().info('ID')
 
@@ -151,6 +154,8 @@ class InstallerPrograms(PrintText):
 			self.wine_debian()
 		elif os_id == 'arch':
 			self.wine_archlinux()
+		elif os_id == 'fedora':
+			self.wine_fedora()
 		else:
 			self.red('A instalação do wine-stable não está disponível para o seu sistema apartir deste programa.')
 			return int('1')
@@ -170,6 +175,9 @@ class InstallerPrograms(PrintText):
 			Pacman().update()
 			Pacman().install(requeriments_winetricks)
 			Pacman().install('winetricks')
+		elif os_id == 'arch':
+			os.system(f'sudo dnf install {requeriments_winetricks}')
+			os.system('sudo dnf install winetricks')
 		else:
 			self.red('A instalação do winetricks não está disponível para o seu sistema apartir deste programa.')
 			return int('1')

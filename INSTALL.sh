@@ -116,7 +116,7 @@ install_pywine()
 		download_pywine || return 1
 		unpack_pywine || return 1
 		mv pywine-master pywine-amd64
-		cp -R -v pywine-amd64 /opt/
+		cp -R pywine-amd64 /opt/
 	else # Instalação off-line se não houver conexão com a internet.
 		_msg "Entrando no diretório ... $dir_of_executable"; cd "$dir_of_executable"
 		_msg "Criando o diretório ... /opt/pywine-amd64"; mkdir -p /opt/pywine-amd64
